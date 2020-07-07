@@ -26,7 +26,7 @@ class AdminArea implements AppState {
             'Currency converter settings',
             'manage_options',
             'cc_options_page',
-            array($this, 'render_settings_page') //рендер функция
+            array($this, 'render_settings_page')
         );
     }
 
