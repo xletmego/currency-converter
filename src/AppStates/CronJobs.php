@@ -7,27 +7,20 @@ class CronJobs implements AppState{
 
     private $remoteService;
     private $storage;
+    private $currency;
 
-    public function __construct(RemoteService $remoteService, Storage $storage){
+    public function __construct(RemoteService $remoteService, Storage $storage, Currency $currency){
         $this->remoteService = $remoteService;
         $this->storage = $storage;
+        $this->currency = $currency;
     }
 
     public function proceed(){
-        return $this->updateCurrencies();
-    }
 
-    public function updateCurrencies(){
-        $currencies = $this->remoteService->fetchAll();
-        if($this->remoteService->hasError() === true){
-            return false;
-        }
+        $this->remoteService->setMode(get_option(CMC_OPTION_MODE, ''));
+        $this->remoteService->setApiKey(get_option(CMC_OPTION_API_KEY, ''));
 
-        foreach ($currencies as $currency){
-            $this->storage->setCurrency($currency);
-        }
-
-        return true;
+        $this->currency->reloadFromAPI($this->remoteService);
     }
 
 }

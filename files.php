@@ -11,6 +11,9 @@ require_once PLUGIN_FOLDER  . '/src/Currency/CMCCurrency.php';
 require_once PLUGIN_FOLDER  . '/src/Operation/Operation.php';
 require_once PLUGIN_FOLDER  . '/src/Operation/CMCOperation.php';
 
+require_once PLUGIN_FOLDER  . '/src/Renderer/Renderer.php';
+require_once PLUGIN_FOLDER  . '/src/Renderer/SimpleView.php';
+
 require_once PLUGIN_FOLDER  . '/src/Converter/Converter.php';
 require_once PLUGIN_FOLDER  . '/src/Converter/CMCConverter.php';
 

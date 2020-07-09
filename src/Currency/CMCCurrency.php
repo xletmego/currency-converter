@@ -9,9 +9,38 @@ class CMCCurrency implements Currency{
     public $usd_rate = 0;
     public $amount = 0;
 
+    private $storage;
 
-    public static function populateFromArray(array $meta_data = array()){
-        $currency = new CMCCurrency();
+    public function __construct(Storage $storage){
+        $this->storage = $storage;
+    }
+
+    public function retrieve($id = ''){
+        return $this->storage->getCurrency($id);
+    }
+
+    public function save(){
+        $this->storage->setCurrency($this);
+    }
+
+    public function reloadFromAPI(RemoteService $remoteService){
+
+        $data = $remoteService->fetchAll();
+
+        if($remoteService->hasError() === true){
+            return false;
+        }
+
+        foreach ($data as $array){
+            $currency = $this->createFromArray($array);
+            $currency->save();
+        }
+
+        return true;
+    }
+
+    private function createFromArray(array $meta_data = array()){
+        $currency = new CMCCurrency($this->storage);
 
         if(!empty($meta_data['id']) && is_numeric($meta_data['id'])){
             $currency->id = intval($meta_data['id']);

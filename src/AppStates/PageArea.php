@@ -7,11 +7,13 @@ class PageArea implements AppState{
     private $storage;
     private $converter;
     private $operation;
+    private $renderer;
 
-    public function __construct(Storage $storage, Converter $converter, $operation){
+    public function __construct(Storage $storage, Converter $converter, Operation $operation, SimpleView $renderer){
         $this->storage = $storage;
         $this->converter = $converter;
         $this->operation = $operation;
+        $this->renderer = $renderer;
     }
 
     public function proceed(){
@@ -53,8 +55,8 @@ class PageArea implements AppState{
     }
 
     private function createOptionsHTML(){
-        $storage = new DBStorage();
-        $data = $storage->getAllCurrencies();
+
+        $data = $this->storage->getAllCurrencies();
         $html = '';
         foreach ($data as $currency){
             $html .= "<option value='{$currency->id}'>{$currency->name}</option>";

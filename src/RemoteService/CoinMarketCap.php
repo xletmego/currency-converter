@@ -11,13 +11,6 @@ class CoinMarketCap implements RemoteService {
 
     const SERVICE_NAME = 'CoinMarketCap api';
 
-    public function __construct(){
-
-        $this->setMode(get_option(CMC_OPTION_MODE, ''));
-        $this->setApiKey(get_option(CMC_OPTION_API_KEY, ''));
-
-    }
-
     public function getServiceName(){
         return self::SERVICE_NAME;
     }
@@ -32,14 +25,7 @@ class CoinMarketCap implements RemoteService {
             'aux' => 'num_market_pairs,cmc_rank,date_added,tags,platform,max_supply,circulating_supply,total_supply,platform,num_market_pairs,date_added,tags,max_supply,circulating_supply,total_supply,cmc_rank'
         );
 
-        $data = $this->sendRequest($url, $params);
-
-        $currencies = array();
-        foreach ($data as $array){
-            $currencies[] = CMCCurrency::populateFromArray($array);
-        }
-
-        return $currencies;
+        return $this->sendRequest($url, $params);
     }
 
     public function onlineConvert($id_from, $id_to, $amount){
@@ -92,11 +78,11 @@ class CoinMarketCap implements RemoteService {
         return array();
     }
 
-    private function setMode($mode){
+    public function setMode($mode){
         $this->api_url = 'https://' . $mode . '.coinmarketcap.com/v1/';
     }
 
-    private function setApiKey($key){
+    public function setApiKey($key){
         $this->api_key = $key;
     }
 

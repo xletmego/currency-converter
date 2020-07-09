@@ -5,13 +5,13 @@ namespace CurrencyConverter;
 class Ajax implements AppState{
 
     private $converter;
-    private $storage;
     private $operation;
+    private $currency;
 
-    public function __construct(Storage $storage, Converter $converter, Operation $operation){
+    public function __construct(Converter $converter, Operation $operation, Currency $currency){
         $this->converter = $converter;
-        $this->storage = $storage;
         $this->operation = $operation;
+        $this->currency = $currency;
     }
 
     public function proceed(){
@@ -39,9 +39,8 @@ class Ajax implements AppState{
             $amount = abs(floatval($_REQUEST['amount']));
         }
 
-        $storage = new DBStorage();
-        $curr_from = $storage->getCurrency($from_id);
-        $curr_to = $storage->getCurrency($to_id);
+        $curr_from = $this->currency->retrieve($from_id);
+        $curr_to = $this->currency->retrieve($to_id);
 
         $curr_to->amount = $this->converter->calc($curr_from, $curr_to, $amount);
 

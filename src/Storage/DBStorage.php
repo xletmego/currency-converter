@@ -13,7 +13,7 @@ class DBStorage implements Storage {
     }
 
     private function rowToCurrency($row, $prefix = ''){
-        $currency = new CMCCurrency();
+        $currency = new CMCCurrency($this);
         foreach ($row as $key => $val){
             $var_name = str_replace($prefix, '', $key);
             $currency->$var_name = $val;
@@ -49,13 +49,13 @@ class DBStorage implements Storage {
 
         $data = array();
         foreach ($rows as $row){
-            $from = new CMCCurrency();
+            $from = new CMCCurrency($this);
             $from->id = $row->from_id;
             $from->name = $row->from_name;
             $from->usd_rate = $row->from_usd_rate;
             $from->amount = $row->from_amount;
 
-            $to = new CMCCurrency();
+            $to = new CMCCurrency($this);
             $to->id = $row->to_id;
             $to->name = $row->to_name;
             $to->usd_rate = $row->to_usd_rate;

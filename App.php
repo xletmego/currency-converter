@@ -9,14 +9,15 @@ class App {
     private $converter;
     private $operation;
     private $currency;
+    private $renderer;
 
     public function __construct(){
 
         $this->storage = new DBStorage();
         $this->remoteService = new CoinMarketCap();
         $this->converter = new CMCConverter();
-        $this->currency = new CMCCurrency();
-
+        $this->renderer = new SimpleView();
+        $this->currency = new CMCCurrency($this->storage);
         $this->operation = new CMCOperation($this->storage, $this->converter);
 
     }
@@ -49,20 +50,20 @@ class App {
 
         if( wp_doing_cron() === true) {
 
-            $appState = new CronJobs($this->remoteService, $this->storage);
+            $appState = new CronJobs($this->remoteService, $this->storage, $this->currency);
 
         } else if( wp_doing_ajax() === true ) {
 
-            $appState = new Ajax($this->storage, $this->converter, $this->operation);
+            $appState = new Ajax($this->converter, $this->operation, $this->currency);
 
         } else if(is_admin() === true){
 
 
-            $appState = new AdminArea($this->storage, $this->remoteService);
+            $appState = new AdminArea($this->storage, $this->remoteService, $this->renderer, $this->currency);
 
         } else {
 
-            $appState = new PageArea($this->storage, $this->converter, $this->operation);
+            $appState = new PageArea($this->storage, $this->converter, $this->operation, $this->renderer);
 
         }
 
