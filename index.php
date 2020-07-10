@@ -17,6 +17,7 @@ define('HISTORY_SHOW_LIMIT', 10);
 define('CRON_TASK_INTERVAL_NAME','coinmarketcap_update_interval');
 define('CMC_OPTION_MODE','coinmarketcap_mode');
 define('CMC_OPTION_API_KEY', 'coinmarketcap_key');
+define('CMC_CONVERT_TYPE', 'coinmarketcap_convert_type');
 
 
 require_once PLUGIN_FOLDER  . '/files.php';

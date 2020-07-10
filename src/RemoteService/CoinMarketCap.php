@@ -28,8 +28,33 @@ class CoinMarketCap implements RemoteService {
         return $this->sendRequest($url, $params);
     }
 
-    public function onlineConvert($id_from, $id_to, $amount){
+    public function convert($from, $to_symbol, $amount){
+        $url = $this->api_url . 'tools/price-conversion';
+        $params = array(
+            'id' => $from,
+            'amount' => $amount,
+            'convert' => $to_symbol,
+        );
+        $data = $this->sendRequest($url, $params);
+        $price = 0;
 
+        if($this->hasError() === false
+            && (!empty($data["quote"]) && !empty($data["quote"][$to_symbol]) && !empty($data["quote"][$to_symbol]['price']))){
+            $price = $data["quote"][$to_symbol]['price'];
+        }
+        return $price;
+    }
+
+    public function setMode($mode){
+        $this->api_url = 'https://' . $mode . '.coinmarketcap.com/v1/';
+    }
+
+    public function setApiKey($key){
+        $this->api_key = $key;
+    }
+
+    public function hasError(){
+        return $this->error;
     }
 
     private function sendRequest($url, $params){
@@ -41,6 +66,10 @@ class CoinMarketCap implements RemoteService {
         $qs = http_build_query($params);
         $request = "{$url}?{$qs}";
 
+        if(function_exists(curl_init()) === false){
+            $this->riseError();
+            return array();
+        }
 
         $curl = curl_init();
 
@@ -78,19 +107,7 @@ class CoinMarketCap implements RemoteService {
         return array();
     }
 
-    public function setMode($mode){
-        $this->api_url = 'https://' . $mode . '.coinmarketcap.com/v1/';
-    }
-
-    public function setApiKey($key){
-        $this->api_key = $key;
-    }
-
     private function riseError(){
         $this->error = true;
-    }
-
-    public function hasError(){
-        return $this->error;
     }
 }

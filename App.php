@@ -15,8 +15,9 @@ class App {
 
         $this->storage = new DBStorage();
         $this->remoteService = new CoinMarketCap();
-        $this->converter = new CMCConverter();
         $this->renderer = new SimpleView();
+
+        $this->converter = new CMCConverter($this->remoteService);
         $this->currency = new CMCCurrency($this->storage);
         $this->operation = new CMCOperation($this->storage, $this->converter);
 

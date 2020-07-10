@@ -17,23 +17,33 @@ class PageArea implements AppState{
     }
 
     public function proceed(){
-        add_action( 'wp_body_open', array($this, 'render') );
+
+        add_action( 'wp_body_open', function (){
+            global $page_id;
+
+            $home_page_id = get_option('page_on_front');
+
+            if($home_page_id != $page_id){
+                return;
+            }
+
+            $this->render();
+
+        });
     }
 
-    public function render(){
-
-        global $page_id;
-
-        $home_page_id = get_option('page_on_front');
-
-        if($home_page_id != $page_id){
-            return;
-        }
+    private function render(){
 
         $this->registerStyles();
         $this->registerJS();
-        $this->renderConverterHTML();
 
+        $this->renderer->setTemplate('Converter');
+        $vars = array(
+            'currencyOptions' => $this->createOptionsHTML(),
+            'adminUrl' => $this->getAdminURL(),
+        );
+        $this->renderer->setVars($vars);
+        $this->renderer->display();
     }
 
     private function registerStyles(){
@@ -64,53 +74,8 @@ class PageArea implements AppState{
         return $html;
     }
 
-    private function renderConverterHTML(){
-        $currencyOptions = $this->createOptionsHTML();
-        $adminUrl = admin_url( 'admin-ajax.php');
-
-        $html = "
-            <div id='currency-converter' ajaxurl='{$adminUrl}'>
-                <div class='container'>
-                    <h4> Currency converter</h4>
-                    <div class='row'>
-                        <div class='six columns'>
-                            <select name='from' class='u-full-width'>
-                                {$currencyOptions}
-                            </select>
-                        </div>
-                        <div class='six columns'>
-                            <select name='to' class='u-full-width'>
-                                {$currencyOptions}
-                            </select>
-                        </div>
-                    </div>
-                    
-                    <div class='row'>
-                        <div class='twelve columns text-center'>
-                            <h6 class='converter-result'></h6>
-                        </div>
-                       
-                    </div>
-                    
-                    
-                    <div class='row'>
-                        <div class='six columns'>
-                            <input class='u-full-width' name='amount' type='text' value='' placeholder='Enter Amount to Convert'/>
-                        </div>
-                        <div class='one-third column u-pull-right' >
-                            <button id='converter-btn' class='button button-primary u-full-width'>
-                                Convert
-                            </button>
-                        </div>
-                    </div>
-                    <div id='operations' class='row'>
-
-                    </div>
-                </div>
-            </div>  
-        ";
-
-        echo $html;
+    private function getAdminURL(){
+        return admin_url( 'admin-ajax.php');
     }
 
 

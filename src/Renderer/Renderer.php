@@ -4,6 +4,6 @@ namespace CurrencyConverter;
 
 interface Renderer{
 
-    public function set();
+    public function setTemplate();
     public function display();
 }

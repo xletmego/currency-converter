@@ -8,6 +8,7 @@ class CMCCurrency implements Currency{
     public $slug = '';
     public $usd_rate = 0;
     public $amount = 0;
+    public $symbol = '';
 
     private $storage;
 
@@ -52,6 +53,10 @@ class CMCCurrency implements Currency{
 
         if(!empty($meta_data['slug'])){
             $currency->slug = $meta_data['slug'];
+        }
+
+        if(!empty($meta_data['symbol'])){
+            $currency->symbol = $meta_data['symbol'];
         }
 
         if(

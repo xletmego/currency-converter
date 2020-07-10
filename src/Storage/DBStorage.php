@@ -75,13 +75,14 @@ class DBStorage implements Storage {
 
 
         $qry = "INSERT INTO " . self::getCurrenciesTableName() . "
-            (id, name, slug, usd_rate) VALUES (%d, %s, %s, %f) ON DUPLICATE KEY UPDATE usd_rate = %f";
+            (id, name, slug, symbol, usd_rate) VALUES (%d, %s, %s,%s, %f) ON DUPLICATE KEY UPDATE usd_rate = %f";
 
         $qry = $wpdb->prepare(
             $qry,
             $currency->id,
             $currency->name,
             $currency->slug,
+            $currency->symbol,
             $currency->usd_rate,
             $currency->usd_rate
         );
@@ -123,6 +124,7 @@ class DBStorage implements Storage {
                 `id` int(0) NOT NULL,
                 `name` varchar(64) NULL DEFAULT '',
                 `slug` varchar(16) NULL DEFAULT '',
+                `symbol` varchar(8) NULL DEFAULT '',
                 `usd_rate` float(255, 12)  NULL DEFAULT 0,
                 PRIMARY KEY (`id`));
         ";

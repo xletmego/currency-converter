@@ -8,6 +8,8 @@ class AdminArea implements AppState {
     private $remoteService;
     private $renderer;
     private $currency;
+    private $modes = array('sandbox-api' => 'Use sandbox mode','pro'=> 'Live mode');
+    private $convertTypes = array('online' => '(Online) Use CoinMarketCapAPI', 'offline' => '(Offline) Use preloaded currency rates');
 
     public function __construct(Storage $storage, RemoteService $remoteService, SimpleView $renderer, Currency $currency){
 
@@ -18,7 +20,7 @@ class AdminArea implements AppState {
     }
 
     public function proceed(){
-        $this->renderer->set('Settings');
+        $this->renderer->setTemplate('Settings');
 
         add_action('admin_menu', function (){
             add_options_page(
@@ -61,6 +63,25 @@ class AdminArea implements AppState {
                 'cc_options_page',
                 'cc_options'
             );
+
+            register_setting('cc_options', CMC_CONVERT_TYPE, array('type' => 'text'));
+            add_settings_field(
+                CMC_CONVERT_TYPE,
+                'Conversion type',
+                function (){
+                    $convert_type = get_option( CMC_CONVERT_TYPE );
+                    if(empty($convert_type)){
+                        $convert_type = 'offline';
+                    }
+
+                    $optionsHTML = $this->createSelectOptionsHTML($this->convertTypes, $convert_type);
+
+                    echo "<select name='" . CMC_CONVERT_TYPE . "' class='regular-text'>{$optionsHTML}</select>";
+                },
+                'cc_options_page',
+                'cc_options'
+            );
+
         });
 
     }
@@ -68,13 +89,12 @@ class AdminArea implements AppState {
     public function checkOptions(){
 
         $mode = '';
-        if(!empty($_REQUEST[CMC_OPTION_MODE]) && ($_REQUEST[CMC_OPTION_MODE] == 'sandbox-api' || $_REQUEST[CMC_OPTION_MODE] == 'pro')){
+        if(!empty($_REQUEST[CMC_OPTION_MODE]) && array_key_exists($_REQUEST[CMC_OPTION_MODE], $this->modes) === true){
             $mode = $_REQUEST[CMC_OPTION_MODE];
         }
 
         $key = '';
-        if(!empty($_REQUEST[CMC_OPTION_API_KEY])){
-            //add and is_guid
+        if(!empty($_REQUEST[CMC_OPTION_API_KEY]) && $this->isGUID($_REQUEST[CMC_OPTION_API_KEY])){
             $key = $_REQUEST[CMC_OPTION_API_KEY];
         }
 
@@ -83,7 +103,9 @@ class AdminArea implements AppState {
 
         if( $this->currency->reloadFromAPI($this->remoteService) === false ){
             add_settings_error('cc_options', 'cc', 'Can`t establish connection with coinmarketcap.com', 'error');
+            return '';
         }
+        return $mode;
     }
 
     public function coinmarketcap_options_mode(){
@@ -91,16 +113,10 @@ class AdminArea implements AppState {
         if(empty($current_option)){
             $current_option = 'sandbox-api';
         }
-        $options_html = '';
 
-        foreach (array('sandbox-api' => 'Sandbox','pro'=> 'Live') as $option => $name){
-            $selected_html = '';
-            if($option === $current_option){
-                $selected_html = 'selected="selected"';
-            }
-            $options_html .= "<option value='{$option}' {$selected_html}>{$name}</option>";
-        }
-        echo "<select name='" . CMC_OPTION_MODE . "'>{$options_html}</select>";
+        $optionsHTML = $this->createSelectOptionsHTML($this->modes, $current_option);
+
+        echo "<select name='" . CMC_OPTION_MODE . "' class='regular-text'>{$optionsHTML}</select>";
     }
 
     public function coinmarketcap_options_key(){
@@ -109,6 +125,30 @@ class AdminArea implements AppState {
             $value = '';
         }
 
-        echo "<input name='" . CMC_OPTION_API_KEY ."' type='text' value='{$value}'/>";
+        echo "<input name='" . CMC_OPTION_API_KEY ."' type='text' placeholder='xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx' value='{$value}' class='regular-text'/>";
+    }
+
+    private function createSelectOptionsHTML(array $array, $selectedKey = ''){
+        $optionsHTML = '';
+
+        foreach ($array as $option => $name){
+            $selectedHTML = '';
+            if($option === $selectedKey){
+                $selectedHTML = 'selected="selected"';
+            }
+            $optionsHTML .= "<option value='{$option}' {$selectedHTML}>{$name}</option>";
+        }
+        return $optionsHTML;
+    }
+
+    private function isGUID($guid){
+
+        if(strlen($guid) != 36) {
+            return false;
+        }
+        if(preg_match("/\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/i", $guid)) {
+            return true;
+        }
+        return true;
     }
 }
