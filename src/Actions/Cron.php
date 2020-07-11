@@ -3,7 +3,7 @@
 namespace CurrencyConverter;
 
 
-class CronJobs implements AppState{
+class Cron implements Action{
 
     private $remoteService;
     private $storage;

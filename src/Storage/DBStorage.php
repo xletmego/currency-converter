@@ -117,7 +117,7 @@ class DBStorage implements Storage {
 
 
 
-    public static function install(){
+    public function install(){
         require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
         $currencies_table = "
             CREATE TABLE IF NOT EXISTS `" . self::getCurrenciesTableName() . "` (
@@ -145,7 +145,7 @@ class DBStorage implements Storage {
         update_option(self::getOperationsTableName() . '_db_version', self::CURRENT_VERSION);
     }
 
-    public static function uninstall(){
+    public function uninstall(){
         global $wpdb;
         $wpdb->query("DROP TABLE IF EXISTS " . self::getCurrenciesTableName());
         $wpdb->query("DROP TABLE IF EXISTS " . self::getOperationsTableName());

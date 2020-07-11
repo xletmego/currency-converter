@@ -2,7 +2,7 @@
 
 namespace CurrencyConverter;
 
-class PageArea implements AppState{
+class Costumer implements Action{
 
     private $storage;
     private $converter;

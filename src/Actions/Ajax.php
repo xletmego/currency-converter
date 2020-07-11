@@ -2,7 +2,7 @@
 
 namespace CurrencyConverter;
 
-class Ajax implements AppState{
+class Ajax implements Action{
 
     private $converter;
     private $operation;

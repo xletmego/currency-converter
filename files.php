@@ -19,8 +19,8 @@ require_once PLUGIN_FOLDER  . '/src/Converter/CMCConverter.php';
 
 require_once PLUGIN_FOLDER  . '/App.php';
 
-require_once PLUGIN_FOLDER  . '/src/AppStates/AppState.php';
-require_once PLUGIN_FOLDER  . '/src/AppStates/AdminArea.php';
-require_once PLUGIN_FOLDER  . '/src/AppStates/PageArea.php';
-require_once PLUGIN_FOLDER  . '/src/AppStates/Ajax.php';
-require_once PLUGIN_FOLDER  . '/src/AppStates/CronJobs.php';
+require_once PLUGIN_FOLDER  . '/src/Actions/Action.php';
+require_once PLUGIN_FOLDER  . '/src/Actions/Admin.php';
+require_once PLUGIN_FOLDER  . '/src/Actions/Costumer.php';
+require_once PLUGIN_FOLDER  . '/src/Actions/Ajax.php';
+require_once PLUGIN_FOLDER  . '/src/Actions/Cron.php';

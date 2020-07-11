@@ -2,7 +2,7 @@
 
 namespace CurrencyConverter;
 
-class AdminArea implements AppState {
+class Admin implements Action {
 
     private $storage;
     private $remoteService;
@@ -45,12 +45,14 @@ class AdminArea implements AppState {
             register_setting(
                 'cc_options',
                 CMC_OPTION_MODE,
-                array('type' => 'text', 'sanitize_callback'=> array($this, 'checkOptions'))
+                array('type' => 'text', 'sanitize_callback'=> array($this, 'checkConnection'))
             );
             add_settings_field(
                 CMC_OPTION_MODE,
                 'Mode',
-                array($this, 'coinmarketcap_options_mode'),
+                function (){
+                    echo $this->createSelectHTML(CMC_OPTION_MODE,$this->modes, 'sandbox-api');
+                },
                 'cc_options_page',
                 'cc_options'
             );
@@ -59,7 +61,9 @@ class AdminArea implements AppState {
             add_settings_field(
                 CMC_OPTION_API_KEY,
                 'API key',
-                array($this, 'coinmarketcap_options_key'),
+                function (){
+                    echo $this->createInputHTML(CMC_OPTION_API_KEY, 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx');
+                },
                 'cc_options_page',
                 'cc_options'
             );
@@ -69,14 +73,7 @@ class AdminArea implements AppState {
                 CMC_CONVERT_TYPE,
                 'Conversion type',
                 function (){
-                    $convert_type = get_option( CMC_CONVERT_TYPE );
-                    if(empty($convert_type)){
-                        $convert_type = 'offline';
-                    }
-
-                    $optionsHTML = $this->createSelectOptionsHTML($this->convertTypes, $convert_type);
-
-                    echo "<select name='" . CMC_CONVERT_TYPE . "' class='regular-text'>{$optionsHTML}</select>";
+                    echo $this->createSelectHTML(CMC_CONVERT_TYPE, $this->convertTypes, 'offline');
                 },
                 'cc_options_page',
                 'cc_options'
@@ -86,7 +83,7 @@ class AdminArea implements AppState {
 
     }
 
-    public function checkOptions(){
+    public function checkConnection(){
 
         $mode = '';
         if(!empty($_REQUEST[CMC_OPTION_MODE]) && array_key_exists($_REQUEST[CMC_OPTION_MODE], $this->modes) === true){
@@ -108,24 +105,23 @@ class AdminArea implements AppState {
         return $mode;
     }
 
-    public function coinmarketcap_options_mode(){
-        $current_option = get_option( CMC_OPTION_MODE );
-        if(empty($current_option)){
-            $current_option = 'sandbox-api';
-        }
-
-        $optionsHTML = $this->createSelectOptionsHTML($this->modes, $current_option);
-
-        echo "<select name='" . CMC_OPTION_MODE . "' class='regular-text'>{$optionsHTML}</select>";
-    }
-
-    public function coinmarketcap_options_key(){
-        $value = get_option( CMC_OPTION_API_KEY );
+    private function createInputHTML($wpOptionName, $placeholder = ''){
+        $value = get_option( $wpOptionName );
         if(empty($value)){
             $value = '';
         }
+        return "<input name='{$wpOptionName}' type='text' placeholder='{$placeholder}' value='{$value}' class='regular-text'/>";
+    }
 
-        echo "<input name='" . CMC_OPTION_API_KEY ."' type='text' placeholder='xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx' value='{$value}' class='regular-text'/>";
+    private function createSelectHTML($wpOptionName, array $options,  $defaultValue){
+        $currentValue = get_option( $wpOptionName );
+        if(empty($currentValue)){
+            $currentValue = $defaultValue;
+        }
+
+        $optionsHTML = $this->createSelectOptionsHTML($options, $currentValue);
+
+        return "<select name='{$wpOptionName}' class='regular-text'>{$optionsHTML}</select>";
     }
 
     private function createSelectOptionsHTML(array $array, $selectedKey = ''){

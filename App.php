@@ -23,8 +23,33 @@ class App {
 
     }
 
+    public function init(){
+
+        if( wp_doing_cron() === true) {
+
+            $action = new Cron($this->remoteService, $this->storage, $this->currency);
+
+        } else if( wp_doing_ajax() === true ) {
+
+            $action = new Ajax($this->converter, $this->operation, $this->currency);
+
+        } else if(is_admin() === true){
+
+
+            $action = new Admin($this->storage, $this->remoteService, $this->renderer, $this->currency);
+
+        } else {
+
+            $action = new Costumer($this->storage, $this->converter, $this->operation, $this->renderer);
+
+        }
+
+        $action->proceed();
+
+    }
+
     public function install(){
-        DBStorage::install();
+        $this->storage->install();
 
         $intervals = wp_get_schedules();
 
@@ -43,33 +68,8 @@ class App {
     }
 
     public function uninstall(){
-        DBStorage::uninstall();
+        $this->storage->uninstall();
         wp_clear_scheduled_hook(array($this, 'init'));
-    }
-
-    public function init(){
-
-        if( wp_doing_cron() === true) {
-
-            $appState = new CronJobs($this->remoteService, $this->storage, $this->currency);
-
-        } else if( wp_doing_ajax() === true ) {
-
-            $appState = new Ajax($this->converter, $this->operation, $this->currency);
-
-        } else if(is_admin() === true){
-
-
-            $appState = new AdminArea($this->storage, $this->remoteService, $this->renderer, $this->currency);
-
-        } else {
-
-            $appState = new PageArea($this->storage, $this->converter, $this->operation, $this->renderer);
-
-        }
-
-        $appState->proceed();
-
     }
 
 }

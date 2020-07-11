@@ -2,6 +2,6 @@
 
 namespace CurrencyConverter;
 
-interface AppState {
+interface Action {
     public function proceed ();
 }
