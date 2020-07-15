@@ -18,6 +18,7 @@ define('CRON_TASK_INTERVAL_NAME','coinmarketcap_update_interval');
 define('CMC_OPTION_MODE','coinmarketcap_mode');
 define('CMC_OPTION_API_KEY', 'coinmarketcap_key');
 define('CMC_CONVERT_TYPE', 'coinmarketcap_convert_type');
+define('CMC_API_RECORDS_LIMIT', 1000);
 
 
 require_once PLUGIN_FOLDER  . '/files.php';
@@ -30,7 +31,6 @@ register_deactivation_hook(__FILE__, function(){
     $app = new App();
     $app->uninstall();
 });
-
 
 $app = new App();
 $app->init();

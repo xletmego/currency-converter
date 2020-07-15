@@ -37,7 +37,12 @@ class CMCConverter implements Converter{
         $this->remoteService->setMode(get_option(CMC_OPTION_MODE, ''));
         $this->remoteService->setApiKey(get_option(CMC_OPTION_API_KEY, ''));
 
-        return $this->remoteService->convert($from->id, $to->symbol, $amount);
+        $result = $this->remoteService->convert($from->id, $to->symbol, $amount);
+        if($this->remoteService->hasError()){
+            $result = $this->offline($from, $to, $amount);
+        }
+
+        return $result;
 
     }
 

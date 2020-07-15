@@ -20,7 +20,7 @@ class CoinMarketCap implements RemoteService {
 
         $params = array(
             'start' => '1',
-            'limit' => '5000',
+            'limit' => CMC_API_RECORDS_LIMIT,
             'convert' => 'USD',
             'aux' => 'num_market_pairs,cmc_rank,date_added,tags,platform,max_supply,circulating_supply,total_supply,platform,num_market_pairs,date_added,tags,max_supply,circulating_supply,total_supply,cmc_rank'
         );
@@ -43,6 +43,11 @@ class CoinMarketCap implements RemoteService {
             $price = $data["quote"][$to_symbol]['price'];
         }
         return $price;
+    }
+
+    public function ping(){
+        $url = $this->api_url . 'key/info';
+        return $this->sendRequest($url, array());
     }
 
     public function setMode($mode){

@@ -39,8 +39,8 @@ class DBStorage implements Storage {
 
         $rows = $wpdb->get_results("
             SELECT 
-                c_from.id as from_id, c_from.name as from_name, c_from.usd_rate as from_usd_rate, 
-                c_to.id as to_id, c_to.name as to_name, c_to.usd_rate as to_usd_rate, op.amount as from_amount
+                c_from.id as from_id, c_from.name as from_name, c_from.symbol as from_symbol, c_from.usd_rate as from_usd_rate, 
+                c_to.id as to_id, c_to.name as to_name, c_to.symbol as to_symbol, c_to.usd_rate as to_usd_rate, op.amount as from_amount
             FROM `wp_currencies_operations` as op
             LEFT JOIN wp_currencies as c_from on op.id_from = c_from.id
             LEFT JOIN wp_currencies as c_to on op.id_to = c_to.id 
@@ -54,12 +54,14 @@ class DBStorage implements Storage {
             $from->name = $row->from_name;
             $from->usd_rate = $row->from_usd_rate;
             $from->amount = $row->from_amount;
+            $from->symbol = $row->from_symbol;
 
             $to = new CMCCurrency($this);
             $to->id = $row->to_id;
             $to->name = $row->to_name;
             $to->usd_rate = $row->to_usd_rate;
             $to->amount = $row->to_amount;
+            $to->symbol = $row->to_symbol;
 
             $data[] = array(
                 'from' => $from,
@@ -70,6 +72,7 @@ class DBStorage implements Storage {
         return $data;
 
     }
+
     public function setCurrency(Currency $currency){
         global $wpdb;
 

@@ -3,6 +3,7 @@
     background: white;
     padding-top:2.5rem;
     padding-bottom:  2.5rem;
+    font-size: 1em;
 }
 
 #currency-converter .row {
@@ -13,4 +14,10 @@
 }
 #currency-converter .hidden{
     display: none;
+}
+#currency-converter select{
+    font-size: 0.8em;
+    line-height: 1.6;
+    font-weight: 400;
+    font-family: "Raleway", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }

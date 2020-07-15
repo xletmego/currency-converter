@@ -39,9 +39,9 @@
                 count = 0;
             }
 
-            html = html +"<li>" + operations[i]['from']['amount'] + ' '+ operations[i]['from']['name'];
+            html = html +"<li>" + operations[i]['from']['amount'] + ' '+ operations[i]['from']['symbol'];
             html = html +" = ";
-            html = html +operations[i]['to']['amount'] + ' '+ operations[i]['to']['name'] + "</li>";
+            html = html +operations[i]['to']['amount'] + ' '+ operations[i]['to']['symbol'] + "</li>";
             count++;
         }
         html = html + '</ul></div>';

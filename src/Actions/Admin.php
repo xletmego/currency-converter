@@ -98,11 +98,16 @@ class Admin implements Action {
         $this->remoteService->setMode($mode);
         $this->remoteService->setApiKey($key);
 
-        if( $this->currency->reloadFromAPI($this->remoteService) === false ){
-            add_settings_error('cc_options', 'cc', 'Can`t establish connection with coinmarketcap.com', 'error');
-            return '';
+        $this->remoteService->ping();
+        if($this->remoteService->hasError()){
+            $this->showOptionsError('Can`t establish connection with coinmarketcap.com');
+            return $mode;
         }
         return $mode;
+    }
+
+    private function showOptionsError($msg){
+        add_settings_error('cc_options', 'cc', $msg, 'error');
     }
 
     private function createInputHTML($wpOptionName, $placeholder = ''){

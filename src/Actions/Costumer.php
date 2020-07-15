@@ -69,7 +69,7 @@ class Costumer implements Action{
         $data = $this->storage->getAllCurrencies();
         $html = '';
         foreach ($data as $currency){
-            $html .= "<option value='{$currency->id}'>{$currency->name}</option>";
+            $html .= "<option value='{$currency->id}'>{$currency->name} ({$currency->symbol})</option>";
         }
         return $html;
     }
