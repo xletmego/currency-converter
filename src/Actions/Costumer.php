@@ -9,7 +9,7 @@ class Costumer implements Action{
     private $operation;
     private $renderer;
 
-    public function __construct(Storage $storage, Converter $converter, Operation $operation, SimpleView $renderer){
+    public function __construct(Storage $storage, Converter $converter, Operation $operation, Renderer $renderer){
         $this->storage = $storage;
         $this->converter = $converter;
         $this->operation = $operation;

@@ -1,15 +1,15 @@
-<div id='currency-converter' ajaxurl='<?php echo $adminUrl ?>'>
+<div id='currency-converter' ajaxurl='{{adminUrl}}'>
     <div class='container'>
         <h4> Currency converter</h4>
         <div class='row'>
             <div class='six columns'>
                 <select name='from' class='u-full-width'>
-                    <?php echo $currencyOptions ?>
+                    {{currencyOptions}}
                 </select>
             </div>
             <div class='six columns'>
                 <select name='to' class='u-full-width'>
-                    <?php echo $currencyOptions ?>
+                    {{currencyOptions}}
                 </select>
             </div>
         </div>

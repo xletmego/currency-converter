@@ -11,7 +11,7 @@ class Admin implements Action {
     private $modes = array('sandbox-api' => 'Use sandbox mode','pro'=> 'Live mode');
     private $convertTypes = array('online' => '(Online) Use CoinMarketCapAPI', 'offline' => '(Offline) Use preloaded currency rates');
 
-    public function __construct(Storage $storage, RemoteService $remoteService, SimpleView $renderer, Currency $currency){
+    public function __construct(Storage $storage, RemoteService $remoteService, Renderer $renderer, Currency $currency){
 
         $this->storage = $storage;
         $this->remoteService = $remoteService;
