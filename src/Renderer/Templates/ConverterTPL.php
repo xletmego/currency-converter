@@ -2,12 +2,17 @@
     <div class='container'>
         <h4> Currency converter</h4>
         <div class='row'>
-            <div class='six columns'>
+            <div class='five columns text-center'>
                 <select name='from' class='u-full-width'>
                     {{currencyOptions}}
                 </select>
             </div>
-            <div class='six columns'>
+            <div class="two columns text-center">
+                <button id="switch" class="button button-primary">
+                    <i class="fa fa-exchange" aria-hidden="true"></i>
+                </button>
+            </div>
+            <div class='five columns text-center'>
                 <select name='to' class='u-full-width'>
                     {{currencyOptions}}
                 </select>

@@ -24,3 +24,6 @@ require_once PLUGIN_FOLDER  . '/src/Actions/Admin.php';
 require_once PLUGIN_FOLDER  . '/src/Actions/Costumer.php';
 require_once PLUGIN_FOLDER  . '/src/Actions/Ajax.php';
 require_once PLUGIN_FOLDER  . '/src/Actions/Cron.php';
+
+require_once PLUGIN_FOLDER  . '/src/Exceptions/Exception.php';
+require_once PLUGIN_FOLDER  . '/src/Exceptions/TemplateNotFoundException.php';

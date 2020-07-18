@@ -50,6 +50,7 @@ class Costumer implements Action{
         wp_enqueue_style( 'skeletonCss',    PLUGIN_URL_PATH. '/assets/css/skeleton.css');
         wp_enqueue_style( 'converterCss',    PLUGIN_URL_PATH. '/assets/css/converter.css');
         wp_enqueue_style('RalewayFont', 'https://fonts.googleapis.com/css2?family=Raleway:ital,wght@1,300&display=swap');
+        wp_enqueue_style('fontAwesome', 'https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');
     }
 
     private function registerJS(){

@@ -24,7 +24,7 @@ class SimpleRender implements Renderer {
     public function display(){
         $filename =  $this->tplDir . $this->tplName. '.php';
         if(file_exists($filename) !== true){
-            //throw e
+            throw new TemplateNotFoundException('File "'. $this->tplName . '" not found.');
         }
 
 

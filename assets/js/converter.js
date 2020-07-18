@@ -10,6 +10,9 @@
     let submitBtn = $(converterEl).find('#converter-btn');
     let resultEl = $(converterEl).find('.converter-result');
     let operationsEl = $(converterEl).find('#operations');
+    let switchBtn = $(converterEl).find('#switch');
+    let url = converterEl.attr('ajaxurl')
+    let amountEl = converterEl.find('input[name="amount"]');
 
 
     let is_valid_response = function(response){
@@ -39,7 +42,9 @@
                 count = 0;
             }
 
-            html = html +"<li>" + operations[i]['from']['amount'] + ' '+ operations[i]['from']['symbol'];
+            html = html +"<li class='operation-row' amount='" + operations[i]['from']['amount'] + "' ";
+            html = html +"from-id='" + operations[i]['from']['id'] + "' to-id='" + operations[i]['to']['id'] + "'>";
+            html = html + operations[i]['from']['amount'] + ' '+ operations[i]['from']['symbol'];
             html = html +" = ";
             html = html +operations[i]['to']['amount'] + ' '+ operations[i]['to']['symbol'] + "</li>";
             count++;
@@ -59,16 +64,33 @@
         });
     }
 
+    let uniqueSelectOptions = function(firstRun){
+
+        let targetName = 'from';
+
+        if($(this).attr('name') === 'from'){
+            targetName = 'to';
+
+        }
+        let val = $(this).val();
+        let targetEl = $(converterEl).find('select[name="' + targetName + '"]');
+        $(targetEl).find('option.hidden').removeClass('hidden');
+        $(targetEl).find('option[value="' + val + '"]').addClass('hidden');
+
+        if(firstRun !== undefined){
+            let newVal = $(targetEl).find('option:not(.hidden)').first().attr('value');
+            $(targetEl).val(newVal);
+        }
+    }
+
 
 
     $.each([fromEl, toEl], function () {
         this.change(function () {
+            uniqueSelectOptions.apply(this);
             submitBtn.click();
         });
     });
-
-    let url = converterEl.attr('ajaxurl')
-    let amountEl = converterEl.find('input[name="amount"]');
 
     submitBtn.click(function () {
         let amount = amountEl.val();
@@ -93,6 +115,30 @@
 
         });
     });
+
+    switchBtn.click(function () {
+        let left = $(fromEl).val();
+        let right = $(toEl).val();
+        $(fromEl).val(right);
+        $(toEl).val(left).change();
+    });
+
+    operationsEl.click(function (e) {
+        let rowEl = $(e.target);
+        if(rowEl.hasClass('operation-row') === false){
+            return;
+        }
+
+
+        $(fromEl).val(rowEl.attr('from-id'));
+        $(toEl).val(rowEl.attr('to-id'));
+        $(amountEl).val(rowEl.attr('amount'));
+
+        fromEl.change();
+
+    });
+
+    uniqueSelectOptions.apply(fromEl, [true]);
 
     reloadOperationsData();
 
