@@ -19,6 +19,7 @@ define('CMC_OPTION_MODE','coinmarketcap_mode');
 define('CMC_OPTION_API_KEY', 'coinmarketcap_key');
 define('CMC_CONVERT_TYPE', 'coinmarketcap_convert_type');
 define('CMC_API_RECORDS_LIMIT', 1000);
+define('CMC_REQUEST_TIMEOUT', 180);
 
 
 require_once PLUGIN_FOLDER  . '/files.php';

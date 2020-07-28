@@ -8,8 +8,14 @@ class Admin implements Action {
     private $remoteService;
     private $renderer;
     private $currency;
-    private $modes = array('sandbox-api' => 'Use sandbox mode','pro'=> 'Live mode');
-    private $convertTypes = array('online' => '(Online) Use CoinMarketCapAPI', 'offline' => '(Offline) Use preloaded currency rates');
+    private $modes = array(
+        'sandbox-api' => 'Use sandbox mode',
+        'pro-api'=> 'Live mode'
+    );
+    private $convertTypes = array(
+        'online' => '(Online) Use CoinMarketCapAPI',
+        'offline' => '(Offline) Use preloaded currency rates'
+    );
 
     public function __construct(Storage $storage, RemoteService $remoteService, Renderer $renderer, Currency $currency){
 
@@ -91,8 +97,8 @@ class Admin implements Action {
         }
 
         $key = '';
-        if(!empty($_REQUEST[CMC_OPTION_API_KEY]) && $this->isGUID($_REQUEST[CMC_OPTION_API_KEY])){
-            $key = $_REQUEST[CMC_OPTION_API_KEY];
+        if(!empty($_REQUEST[CMC_OPTION_API_KEY]) && $this->isGUID(trim($_REQUEST[CMC_OPTION_API_KEY]))){
+            $key = trim($_REQUEST[CMC_OPTION_API_KEY]);
         }
 
         $this->remoteService->setMode($mode);
@@ -100,7 +106,7 @@ class Admin implements Action {
 
         $this->remoteService->ping();
         if($this->remoteService->hasError()){
-            $this->showOptionsError('Can`t establish connection with coinmarketcap.com');
+            $this->showOptionsError($this->remoteService->getLastErrorMessage());
             return $mode;
         }
         return $mode;

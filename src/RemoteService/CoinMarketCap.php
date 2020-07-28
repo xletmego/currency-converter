@@ -8,6 +8,7 @@ class CoinMarketCap implements RemoteService {
     private $api_key = '';
 
     private $error = false;
+    private $errorMessage = '';
 
     const SERVICE_NAME = 'CoinMarketCap api';
 
@@ -22,7 +23,6 @@ class CoinMarketCap implements RemoteService {
             'start' => '1',
             'limit' => CMC_API_RECORDS_LIMIT,
             'convert' => 'USD',
-            'aux' => 'num_market_pairs,cmc_rank,date_added,tags,platform,max_supply,circulating_supply,total_supply,platform,num_market_pairs,date_added,tags,max_supply,circulating_supply,total_supply,cmc_rank'
         );
 
         return $this->sendRequest($url, $params);
@@ -62,57 +62,79 @@ class CoinMarketCap implements RemoteService {
         return $this->error;
     }
 
+    public function getLastErrorMessage(){
+        return $this->errorMessage;
+    }
+
     private function sendRequest($url, $params){
 
-        $headers = [
-            'Accepts: application/json',
-            'X-CMC_PRO_API_KEY: ' . $this->api_key
-        ];
+        $headers = array(
+            'Accepts' => 'application/json',
+            'X-CMC_PRO_API_KEY' => $this->api_key
+        );
         $qs = http_build_query($params);
         $request = "{$url}?{$qs}";
 
-        if(function_exists(curl_init()) === false){
-            $this->riseError();
+        $wpGetData = wp_remote_get( $request ,
+            array(
+                'timeout' => CMC_REQUEST_TIMEOUT,
+                'headers' => $headers
+            ));
+
+        if($wpGetData instanceof \WP_Error){
+            $errors = implode(',', $wpGetData->get_error_messages());
+            $this->riseError($errors);
             return array();
         }
 
-        $curl = curl_init();
+        $code = $this->getServiceCode($wpGetData);
+        $body = $this->getServiceAnswer($wpGetData);
+        $message = $this->getWPMessage($wpGetData);
+        $statusMessage = $this->getServiceStatus($body);
 
-        curl_setopt_array($curl, array(
-            CURLOPT_URL => $request,
-            CURLOPT_HTTPHEADER => $headers,
-            CURLOPT_RETURNTRANSFER => 1
-        ));
-
-        $response = curl_exec($curl);
-        $responseCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-        curl_close($curl);
-
-        if($responseCode !== 200){
-            $this->riseError();
-            return array();
+        if(!empty($statusMessage)){
+            $message = $statusMessage;
         }
 
-        $responseArray = @json_decode($response, true);
-
-        if(empty($responseArray) && json_last_error() !== JSON_ERROR_NONE){
-            $this->riseError();
-            return array();
+        if($code !== 200){
+            $this->riseError("CoinMarketCap Error: {$message}");
         }
 
-        if(!empty($responseArray['status']) && empty($responseArray['data'])){
-            $this->riseError();
-            return array();
-        }
-
-        if(!empty($responseArray['data'])){
-            return $responseArray['data'];
-        }
-
-        return array();
+        return $body;
     }
 
-    private function riseError(){
+    private function getServiceAnswer($wpGetData){
+        $body = @json_decode($wpGetData['body'], true);
+
+        if(empty($body) && json_last_error() !== JSON_ERROR_NONE){
+            return array();
+        }
+
+        return $body;
+    }
+
+    private function getServiceCode($wpGetData){
+        return $wpGetData["response"]["code"];
+    }
+
+    private function getWPMessage($wpGetData){
+        return $wpGetData["response"]["message"];
+    }
+
+    private function getServiceStatus($body){
+        $status = '';
+        if(!empty($body) && !empty($body['status']) && !empty($body['status']['error_message'])){
+            $status = $body['status']['error_message'];
+        }
+        return $status;
+    }
+
+    private function riseError($msg = ''){
         $this->error = true;
+        $this->setErrorMessage($msg);
+    }
+
+    private function setErrorMessage($msg){
+        $this->errorMessage = $msg;
     }
 }
