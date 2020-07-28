@@ -23,6 +23,7 @@ class CoinMarketCap implements RemoteService {
             'start' => '1',
             'limit' => CMC_API_RECORDS_LIMIT,
             'convert' => 'USD',
+            'aux' => 'num_market_pairs,cmc_rank,date_added,tags,platform,max_supply,circulating_supply,total_supply,platform,num_market_pairs,date_added,tags,max_supply,circulating_supply,total_supply,cmc_rank'
         );
 
         return $this->sendRequest($url, $params);
@@ -90,7 +91,8 @@ class CoinMarketCap implements RemoteService {
         $code = $this->getServiceCode($wpGetData);
         $body = $this->getServiceAnswer($wpGetData);
         $message = $this->getWPMessage($wpGetData);
-        $statusMessage = $this->getServiceStatus($body);
+        $statusMessage = $this->getServiceStatusError($body);
+        $data = $this->getServiceData($body);
 
         if(!empty($statusMessage)){
             $message = $statusMessage;
@@ -100,7 +102,7 @@ class CoinMarketCap implements RemoteService {
             $this->riseError("CoinMarketCap Error: {$message}");
         }
 
-        return $body;
+        return $data;
     }
 
     private function getServiceAnswer($wpGetData){
@@ -121,12 +123,20 @@ class CoinMarketCap implements RemoteService {
         return $wpGetData["response"]["message"];
     }
 
-    private function getServiceStatus($body){
+    private function getServiceStatusError($body){
         $status = '';
         if(!empty($body) && !empty($body['status']) && !empty($body['status']['error_message'])){
             $status = $body['status']['error_message'];
         }
         return $status;
+    }
+
+    private function getServiceData($body){
+        $data = array();
+        if(!empty($body) && !empty($body['data'])){
+            $data = $body['data'];
+        }
+        return $data;
     }
 
     private function riseError($msg = ''){

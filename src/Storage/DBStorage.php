@@ -60,7 +60,6 @@ class DBStorage implements Storage {
             $to->id = $row->to_id;
             $to->name = $row->to_name;
             $to->usd_rate = $row->to_usd_rate;
-            $to->amount = $row->to_amount;
             $to->symbol = $row->to_symbol;
 
             $data[] = array(
