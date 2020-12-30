@@ -4,6 +4,3 @@ Simple crypto currency converter.
 2. Setup key and mode from CoinMarketCap.com at plugin settings page
 3. For first time, please, run wp-cron
 
-
-ttt
-another commit
