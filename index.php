@@ -8,6 +8,7 @@ Author: xletmego@gmail.com
 */
 
 
+
 namespace CurrencyConverter;
 
 define('PLUGIN_NAME', 'CurrencyConverter');
